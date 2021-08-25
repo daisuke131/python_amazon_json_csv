@@ -1,16 +1,16 @@
 import re
 
-import pandas as pd
-
 from common.beutifulsoup import Soup
 from common.to_csv import write_csv
 from common.to_json import write_json
 from common.util import filename_creation
 
+# import pandas as pd
+
 
 class Scraping:
     def __init__(self, url: str) -> None:
-        self.df = pd.DataFrame()
+        # self.df = pd.DataFrame()
         self.dic = dict()
         self.csv_title: str = url
         self.url: str = url
@@ -84,13 +84,12 @@ class Scraping:
     def fetch_about_this_product(self, soup) -> str:
         abouts = []
         try:
-            elements = soup.selects("#feature-bullets > ul > li")
-            for i, el in enumerate(elements):
-                if i != 0:
-                    abouts.append(el.get_text().strip())
+            elements = soup.selects("#feature-bullets > ul > li > span.a-list-item")
+            for el in elements:
+                abouts.append(el.get_text().strip())
             # 表示件数を増やす以降
             elements = soup.selects("#feature-bullets > div > div > ul > li")
-            for i, a in enumerate(elements):
+            for i, el in enumerate(elements):
                 abouts.append(el.get_text().strip())
         except Exception:
             abouts = "失敗"
@@ -223,18 +222,18 @@ class Scraping:
         finally:
             return img_url
 
-    def write_csv(self):
-        write_csv(filename_creation(self.csv_title), self.df)
+    def to_csv(self):
+        write_csv(filename_creation("csv"), self.dic)
 
     def to_json(self):
-        write_json(filename_creation(self.csv_title), self.dic)
+        write_json(filename_creation("json"), self.dic)
 
 
 def main():
     url = input("URL入力:")
     my_scraping = Scraping(url)
     my_scraping.scraping()
-    # my_scraping.write_csv()
+    # my_scraping.to_csv()
     my_scraping.to_json()
 
 
